@@ -1,7 +1,7 @@
 CC = gcc -pthread
 CFLAGS = -I /usr/local/include/sdlio
 LDFLAGS = -L /usr/local/include/sdlio/ -lm
-LIBS = -lphidget21 -lmenu -lncurses
+LIBS = -lphidget21 -lmenu -lncurses -lm
 
 PROGS = main.o display.o phidget.o
 

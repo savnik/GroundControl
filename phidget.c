@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include <phidget21.h>
 #include "global.h"
@@ -104,6 +105,10 @@ int CCONV UpdateAngle(CPhidgetBridgeHandle phid, void *userPtr, int index, doubl
 	loadcellY.input = forceY;
 	loadcellX.force = loadcellX.K*(forceX-loadcellX.offset);
 	loadcellY.force = loadcellY.K*(forceY-loadcellY.offset);
+	
+	// Calc circular
+	r = sqrt(pow(forceX,2)+pow(forceY,2));
+	phi = atan(forceY/forceX);
 	
 	//printf("Data Event ForceX: %lf\t ForceY: %lf\t Total force: %lf\n",forceX,forceY,forceX+forceY);
 	

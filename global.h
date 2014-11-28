@@ -3,13 +3,16 @@
 typedef struct{
   double K, offset;
   double input; // Sensor value
-  double force; 
+  double force;
   
 } loadcell;
 
 int stop;
 
 double forceX, forceY;
+
+// Circular coordinates
+double r, phi;
 
 
 loadcell loadcellX;
@@ -20,3 +23,4 @@ int dataRate, dataFilter;
 
 // Phidgets
 char MsgPhidgets[256];
+

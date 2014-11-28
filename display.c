@@ -43,6 +43,7 @@ void init_display(void){
   printw("|    ForceY:                                                                   |\n");
   printw("|    Total force:                                                              |\n");
   printw("|    Angle:                                                                    |\n");
+  printw("|    Force:                                                                    |\n");
   printw("|______________________________________________________________________________|\n");
   printw("|                                                                              |\n");
   printw("|   <Backspace> : Back to Menu                                                 |\n");
@@ -50,7 +51,7 @@ void init_display(void){
   printw("|   <Esc> / <s> : Stop Program                                                 |\n");
   printw("|______________________________________________________________________________|\n");
 
-  mvprintw(23,10,"");
+  mvprintw(24,10,"");
   refresh();
   
   
@@ -106,7 +107,7 @@ void display_calibration(void){
   mvprintw(11,0,"|    2. X load                                                                 |\n");
   printw("|       Put 0.5kg load on X-loadcell in positiv direction.                     |\n");
   printw("|       Hit any key when ready                                                 |\n");
-  printw("|______________________________________________________________________________|\n");
+  //printw("|______________________________________________________________________________|\n");
   
   refresh();
  
@@ -128,7 +129,7 @@ void display_calibration(void){
   mvprintw(11,0,"|    3. Y load                                                                 |\n");
   printw("|       Put 0.5kg load on Y-loadcell in positiv direction.                     |\n");
   printw("|       Hit any key when ready                                                 |\n");
-  printw("|______________________________________________________________________________|\n");
+  //printw("|______________________________________________________________________________|\n");
   
   refresh();
  
@@ -167,6 +168,8 @@ void update_display(void){
     mvprintw(10,27,"%lf\t%lf", loadcellX.input, loadcellX.force);
     mvprintw(11,27,"%lf\t%lf", loadcellY.input, loadcellY.force);
     mvprintw(12,27,"%lf", loadcellX.input+loadcellY.input);
+    mvprintw(13,27,"%lf", phi);
+    mvprintw(14,27,"%lf", r);
     //mvprintw("\033[16;1H");
    
     
