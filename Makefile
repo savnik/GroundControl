@@ -6,9 +6,8 @@ LIBS = -lphidget21 -lmenu -lncurses
 PROGS = main.o display.o phidget.o
 
 all: $(PROGS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 	
-main:	main.o
+main:	main.o phidget.o display.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 	
 phidget: phidget.o
@@ -17,7 +16,10 @@ phidget: phidget.o
 display: display.o
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-doc:	$(PROGS:=.ps)
+
+	
+	
+	doc:	$(PROGS:=.ps)
 
 %.ps:	%.c
 	a2ps -Ma4 -l -o $@ $<

@@ -1,9 +1,17 @@
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <phidget21.h>
 #include "global.h"
+#include "phidget.h"
+
+
+
+
 
 
 int CCONV AttachHandler(CPhidgetHandle phid, void *userptr)
@@ -21,19 +29,20 @@ int CCONV AttachHandler(CPhidgetHandle phid, void *userptr)
 	CPhidgetBridge_setGain(bridge, 3, PHIDGET_BRIDGE_GAIN_64);
 	CPhidgetBridge_setDataRate(bridge, 1000);
 
-	printf("Attach handler ran!\n");
+	strcpy(MsgPhidgets, "Attach handler ran!"); // set status MSG
 	return 0;
 }
 
 int CCONV DetachHandler(CPhidgetHandle phid, void *userptr)
 {
-	printf("Detach handler ran!\n");
+	//MsgPhidgets = "Detach handler ran!\n";
 	return 0;
 }
 
 int CCONV ErrorHandler(CPhidgetHandle phid, void *userptr, int ErrorCode, const char *errorStr)
 {
-	printf("Error event: %s\n",errorStr);
+	//printf("Error event: %s\n",errorStr);
+	strcpy(MsgPhidgets, "Error event Phidget"); // Set status MSG
 	return 0;
 }
 
@@ -47,8 +56,8 @@ void display_generic_properties(CPhidgetHandle phid)
 	CPhidget_getSerialNumber(phid, &sernum);
 	CPhidget_getDeviceVersion(phid, &version);
 
-	printf("%s\n", deviceptr);
-	printf("Version: %8d SerialNumber: %10d\n", version, sernum);
+	//printf("%s\n", deviceptr);
+	//printf("Version: %8d SerialNumber: %10d\n", version, sernum);
 	return;
 }
 
@@ -90,6 +99,11 @@ int CCONV UpdateAngle(CPhidgetBridgeHandle phid, void *userPtr, int index, doubl
 	  
 	}
 	
+	// store to struct
+	loadcellX.input = forceX;
+	loadcellY.input = forceY;
+	loadcellX.force = loadcellX.K*(forceX-loadcellX.offset);
+	loadcellY.force = loadcellY.K*(forceY-loadcellY.offset);
 	
 	//printf("Data Event ForceX: %lf\t ForceY: %lf\t Total force: %lf\n",forceX,forceY,forceX+forceY);
 	
@@ -103,17 +117,26 @@ int CCONV UpdateAngle(CPhidgetBridgeHandle phid, void *userPtr, int index, doubl
 
 
 
-void getAngle(void)
+void GetAngle(void)
 {
     const char *err;	
 	int result;
 	CPhidgetBridgeHandle bridge;
 	//CPhidget_enableLogging(PHIDGET_LOG_VERBOSE, NULL);
 
-	printf("Creating messurement thread\n");
+	//printf("Creating messurement thread\n");
+	strcpy(MsgPhidgets, "Creating messurement thread"); // set status MSG
+	
 	// Initial condition
 	forceX = 0;
 	forceY = 0;
+	loadcellX.offset = -0.05;
+	loadcellX.K = 1;
+	loadcellY.offset = -0.05;
+	loadcellY.K = 1;
+	
+	
+	
 	CPhidgetBridge_create(&bridge);
 
 	CPhidget_set_OnAttach_Handler((CPhidgetHandle)bridge, AttachHandler, NULL);
@@ -129,7 +152,8 @@ void getAngle(void)
 	{
 
 		CPhidget_getErrorDescription(result, &err);
-		printf("Problem waiting for attachment: %s\n", err);
+		//printf("Problem waiting for attachment: %s\n", err);
+		strcpy(MsgPhidgets, "Problem waiting for attachment"); // Set status MSG
 		return;
 	}
 
@@ -140,10 +164,28 @@ void getAngle(void)
 	    // wait for stop signal
 	}
 
-	printf("Closing...\n");
-
+	//printf("Closing...\n");
+	strcpy(MsgPhidgets,"Closing..."); // Set status MSG
+	
 	CPhidget_close((CPhidgetHandle)bridge);
 	CPhidget_delete((CPhidgetHandle)bridge);
 
 	return;
 }
+
+
+void Calibration(double noLoadX, double noLoadY, double loadX, double loadY, double load){
+  
+  // Record the output of the load cell at rest on a flat surface with no force on it. The mv/V output measured by the PhidgetBridge is the offset.
+  loadcellX.offset = noLoadX;
+  loadcellY.offset = noLoadY;
+  
+  // Once you’ve found the offset, measure something with a known weight and solve the equation for K. You can also calibrate the load cell at multiple known weights and use these points to model a linear function. 
+  // Expected Force or Weight = K * (Measured mV/V - Offset)
+  
+  loadcellX.K = load/(loadX-loadcellX.offset);
+  loadcellY.K = load/(loadY-loadcellY.offset);
+  
+  
+}
+
